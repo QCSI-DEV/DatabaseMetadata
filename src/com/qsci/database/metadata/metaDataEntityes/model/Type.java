@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.metaDataEntities.builders;
+package com.qsci.database.metadata.metaDataEntityes.model;
 
 
 public interface Type {

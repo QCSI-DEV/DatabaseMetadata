@@ -5,6 +5,8 @@ import java.util.List;
 
 public interface Index {
 
-    public List<Field> getIndexes();
+    public String getIdentifier();
+
+    public List<Field> getIndex();
 
 }

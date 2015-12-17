@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface ForeignKey {
 
+    public String getIdentifier();
+
     public Table fromTable();
 
     public Table toTable();
@@ -14,8 +16,8 @@ public interface ForeignKey {
 
     public Field toName();
 
-    public Optional<ActionMechanism> getReferenceOnUpdate();
+    public ActionMechanism getReferenceOnUpdate();
 
-    public Optional<ActionMechanism> getReferenceOnDelete();
+    public ActionMechanism getReferenceOnDelete();
 
 }

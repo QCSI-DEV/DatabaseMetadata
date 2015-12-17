@@ -10,7 +10,7 @@ public interface Field {
 
     public Optional<DefaultValue> getDefaultValue();
 
-    public boolean getCheckedValue();
+    public boolean isChecked();
 
     public boolean isUnique();
 

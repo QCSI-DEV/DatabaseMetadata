@@ -5,5 +5,7 @@ import java.util.List;
 
 public interface UniqueIndex {
 
+    public String getIdentifier();
+
     public List<Field> getUniqueIndex();
 }

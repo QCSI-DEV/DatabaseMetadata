@@ -1,47 +1,68 @@
 package com.qsci.database.metadata;
 
+import com.qsci.database.metadata.connection.AbstractConnection;
+import com.qsci.database.metadata.connection.DriverManager;
+import com.qsci.database.metadata.exceptions.NoConnectionExceptions;
 import com.qsci.database.metadata.exceptions.UnknownTransformerException;
 import com.qsci.database.metadata.exceptions.WrongDataForConnectException;
-import com.qsci.database.metadata.managers.TransformerManager;
-import com.qsci.database.metadata.metaDataEntityes.DataForConnect;
 import com.qsci.database.metadata.metaDataEntityes.constraints.ForeignKey;
-import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKey;
 import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
 import com.qsci.database.metadata.metaDataEntityes.indexes.UniqueIndex;
 import com.qsci.database.metadata.metaDataEntityes.model.DefaultValue;
 import com.qsci.database.metadata.metaDataEntityes.model.Field;
 import com.qsci.database.metadata.metaDataEntityes.model.Table;
-import com.qsci.database.metadata.transformers.TransformerMetaData;
-
+import com.qsci.database.metadata.transformerManagers.ConcreteManager;
+import com.qsci.database.metadata.transformerManagers.Manager;
+import com.qsci.database.metadata.transformers.SQLiteTransformer;
+import com.qsci.database.metadata.transformers.Transformer;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Scanner;
 
 public class Run {
     public static void main(String[] args) throws UnknownTransformerException, WrongDataForConnectException {
-        DataForConnect data = null;
-        data.setUrl("url");
-        data.setLogin("login");
-        data.setPassword("password");
-        TransformerManager manager = null;
-        manager.register("null", null);
-        manager.register("null", null);
-        TransformerMetaData concreteTransformer = null;
+
+        Scanner in = new Scanner(System.in);
+        System.out.println("!======================================!");
+        System.out.println("DataBase Metadata Transformer v.0.1");
+        System.out.println("!=======================================!");
+
+        Manager manager = new ConcreteManager();
+        manager.register(SQLiteTransformer.getName(), new SQLiteTransformer());
+        System.out.println("Choose type of data base which you would like connect: ");
+        int choice = 0;
+        for (String transformerName : manager.getRegisteredNames()) {
+            System.out.println((++choice) + ". " + transformerName);
+        }
+        System.out.println("Your choice (use number to choose):");
+        choice = in.nextInt();
+        String choiceName = manager.getRegisteredNames().get(--choice);
+        AbstractConnection connectionWrapper = null;
+        Connection connection = null;
 
         try {
-            concreteTransformer = manager.getTransformer(data);
-        } catch (UnknownTransformerException e) {
-            throw new UnknownTransformerException("UNKNOWN TRANSFORMER");
-        } catch (WrongDataForConnectException e) {
-            String message = "login:" + data.getLogin() + "password" + data.getPassword() + "url" + data.getUrl();
-            System.out.println("WRONG DATA CHECK:" + message);
+            connectionWrapper = DriverManager.getConnectionWrapper(choiceName);
+        } catch (NoConnectionExceptions noConnectionExceptions) {
+            noConnectionExceptions.printStackTrace();
+        }
+        try {
+            connection = connectionWrapper.getConnection();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        List<Table> tables = concreteTransformer.getTables();
+        Transformer transformer = manager.getTransformer(choiceName);
+        transformer.setConnection(connection);
+        List<Table> tables = transformer.getTables();
         for (Table table : tables) {
             System.out.println("********************************");
             System.out.println("Table name: " + table.getName());
             System.out.println("********************************");
-
-            printPrimaryKey(table);
+            /*TO DO  primaryKey*/
+            /*printPrimaryKey(table);*/
 
             List<Field> fields = table.getFields();
             printFields(fields);
@@ -58,6 +79,7 @@ public class Run {
 
         }
     }
+
 
     public static void printFields(List<Field> fields) {
         for (Field field : fields) {
@@ -85,6 +107,7 @@ public class Run {
 
 
     }
+
 
     public static void printForeignKeys(List<ForeignKey> foreignKeys) {
         for (ForeignKey foreignKey : foreignKeys) {
@@ -128,10 +151,11 @@ public class Run {
             System.out.println();
         }
     }
-
-    public static void printPrimaryKey(Table t) {
-
-        PrimaryKey primaryKey = t.getPrimaryKey().map(PrimaryKey::getPrimaryKey).orElse(new PrimaryKey(new List<Field>));
+    /*TO DO  primaryKey*/
+    /*public static void printPrimaryKey(Table t) {
+        List<Field> emptyList = new ArrayList<>();
+        *//*PrimaryKey primaryKey = t.getPrimaryKey().map(PrimaryKey::getPrimaryKey).orElse(emptyList);*//*
+        PrimaryKey primaryKey = t.getPrimaryKey().orElse(new Pr);
         List<Field> pkFields = primaryKey.getPrimaryKey();
         System.out.println("PRIMARY KEY: ");
         for (Field pkField : pkFields) {
@@ -145,8 +169,8 @@ public class Run {
             System.out.print(", ");
 
         }
-        System.out.println();
-    }
+        System.out.println();*/
 
 
 }
+

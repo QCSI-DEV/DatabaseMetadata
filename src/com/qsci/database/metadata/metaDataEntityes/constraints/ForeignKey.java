@@ -1,23 +1,52 @@
 package com.qsci.database.metadata.metaDataEntityes.constraints;
 
-import com.qsci.database.metadata.metaDataEntityes.model.Field;
-import com.qsci.database.metadata.metaDataEntityes.model.Table;
-import java.util.Optional;
+public class ForeignKey {
+    private String identifier;
+    private String fromTable;
+    private String toTable;
+    private String fromName;
+    private String toName;
+    private ActionMechanism actionOnUpdate;
+    private ActionMechanism actionOnDelete;
 
-public interface ForeignKey {
+    public ForeignKey(String identifier, String fromTable, String toTable, String fromName, String toName,
+                      ActionMechanism actionOnUpdate, ActionMechanism actionOnDelete) {
+        this.identifier = identifier;
+        this.fromTable = fromTable;
+        this.toTable = toTable;
+        this.fromName = fromName;
+        this.toName = toName;
+        this.actionOnUpdate = actionOnUpdate;
+        this.actionOnDelete = actionOnDelete;
+    }
 
-    public String getIdentifier();
+    public String getIdentifier() {
+        return null;
+    }
 
-    public Table fromTable();
+    public String fromTable() {
+        return null;
+    }
 
-    public Table toTable();
+    public String toTable() {
+        return null;
+    }
 
-    public Field fromName();
+    public String fromName() {
+        return null;
+    }
 
-    public Field toName();
+    public String toName() {
+        return null;
+    }
 
-    public ActionMechanism getReferenceOnUpdate();
+    public ActionMechanism getActionOnUpdate() {
+        return null;
+    }
 
-    public ActionMechanism getReferenceOnDelete();
+    public ActionMechanism getActionOnDelete() {
+        return null;
+    }
+
 
 }

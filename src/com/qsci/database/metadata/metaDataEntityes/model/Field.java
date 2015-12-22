@@ -1,21 +1,56 @@
 package com.qsci.database.metadata.metaDataEntityes.model;
 
-import java.util.Optional;
+import java.lang.reflect.Type;
 
-public interface Field {
+public class Field {
+    private String name;
+    private String type;
+    private boolean isChecked;
+    private boolean isUnique;
+    private boolean isNullable;
+    private boolean isAutoIncremented;
 
-    public String getName();
+    public Field(String name, String type, boolean isChecked, boolean isUnique,
+                 boolean isNullable, boolean isAutoIncremented) {
+        this.name = name;
+        this.type = type;
+        this.isChecked = isChecked;
+        this.isUnique = isUnique;
+        this.isNullable = isNullable;
+        this.isAutoIncremented = isAutoIncremented;
+    }
 
-    public String getType();
+    public String getName() {
+        return name;
+    }
 
-    /*public Optional<DefaultValue> getDefaultValue();*/
+    public String getType() {
+        return type;
+    }
 
-    public boolean isChecked();
+    public boolean isChecked() {
+        return isChecked;
+    }
 
-    public boolean isUnique();
+    public boolean isUnique() {
+        return isUnique;
+    }
 
-    public boolean isNullable();
+    public boolean isNullable() {
+        return isNullable;
+    }
 
-    public boolean isAutoincrement();
+    public boolean isAutoincrement() {
+        return isAutoIncremented;
+    }
 
+    @Override
+    public String toString() {
+        return "Field name: " + name + "type: " + type + "(" +
+                (isAutoIncremented ? " auto incremented " : " ") +
+                (isNullable ? " default null " : " ")+
+                (isUnique ? " unique " : "non unique")+
+                (isChecked ? " checked value ": " " )
+                + ")";
+    }
 }

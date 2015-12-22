@@ -4,21 +4,52 @@ import com.qsci.database.metadata.metaDataEntityes.constraints.ForeignKey;
 import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKey;
 import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
 import com.qsci.database.metadata.metaDataEntityes.indexes.UniqueIndex;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public interface Table {
 
-    public String getName();
+public class Table {
+    private String name;
+    private List<Field> fields = new ArrayList<Field>();
+    private List<ForeignKey> foreignKeys = new ArrayList<ForeignKey>();
+    private List<PrimaryKey> primaryKeys = new ArrayList<PrimaryKey>();
+    private List<Index> indexes = new ArrayList<Index>();
+    private List<UniqueIndex> uniqueIndexes = new ArrayList<UniqueIndex>();
 
-    public List<Field> getFields();
+    public Table(String name) {
+        this.name = name;
+    }
 
-    public List<ForeignKey> getForeignKeys();
+    public String getName() {
+        return name;
+    }
 
-    public Optional<PrimaryKey> getPrimaryKey();
+    public List<PrimaryKey> getPrimaryKeys() {
+        return primaryKeys;
+    }
 
-    public List<Index> getIndexes();
+    public List<Field> getFields() {
+        return fields;
+    }
 
-    public List<UniqueIndex> getUniqueIndexes();
+    public List<ForeignKey> getForeignKeys() {
+        return foreignKeys;
+    }
 
+    public List<PrimaryKey> getPrimaryKey() {
+        return primaryKeys;
+    }
+
+    public List<Index> getIndexes() {
+        return indexes;
+    }
+
+    public List<UniqueIndex> getUniqueIndexes() {
+        return uniqueIndexes;
+    }
+
+    @Override
+    public String toString() {
+        return "TABLE NAME: " + name;
+    }
 }

@@ -1,9 +1,7 @@
 package com.qsci.database.metadata.transformers;
 
 import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKey;
-import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKeySQLite;
 import com.qsci.database.metadata.metaDataEntityes.model.Table;
-import com.qsci.database.metadata.metaDataEntityes.model.TableSQLite;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -26,7 +24,7 @@ public class SQLiteTransformer implements Transformer {
 
         DatabaseMetaData meta = connection.getMetaData();
 
-        List<TableSQLite> resultTables = new ArrayList<TableSQLite>();
+        List<Table> resultTables = new ArrayList<Table>();
 
         ResultSet setTables = meta.getTables(null, null, null, null);
         while (setTables.next()) {
@@ -38,13 +36,13 @@ public class SQLiteTransformer implements Transformer {
             while (primaryKeySet.next()) {
                 primaryKeyValues.add(primaryKeySet.getString(COLUMN_NAME_INDEX));
             }
-            PrimaryKey primaryKey = new PrimaryKeySQLite(identifier, primaryKeyValues);
-
+            PrimaryKey primaryKey = new PrimaryKey(identifier, primaryKeyValues);
             ResultSet foreignKeySet = meta.getExportedKeys(null, null, tableName);
 
 
-            TableSQLite table = new TableSQLite(tableName, );
+            Table table = new Table(tableName);
             resultTables.add(table);
+            /*TO BE CONTINUED*/
         }
     }
 

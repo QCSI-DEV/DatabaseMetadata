@@ -1,6 +1,6 @@
-package com.qsci.database.metadata.userInfo;
+package com.qsci.database.metadata.userData;
 
-public class UserInfo {
+public class UserData {
     String url;
     String password;
     String login;

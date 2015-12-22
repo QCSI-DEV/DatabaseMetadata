@@ -1,59 +1,47 @@
 package com.qsci.database.metadata.transformerManagers;
 
 import com.qsci.database.metadata.exceptions.UnknownTransformerException;
+import com.qsci.database.metadata.transformers.SQLiteTransformer;
 import com.qsci.database.metadata.transformers.Transformer;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class ConcreteManager implements Manager {
+    final Map<String, Transformer> containerTransformers = new HashMap<>();
+
+
     public ConcreteManager() {
-        containerTransformers = new HashMap<>();
+        register(SQLiteTransformer.getDriverName(),new SQLiteTransformer());
     }
-
-    private Map<String, Transformer> containerTransformers = null;
-
-    static Connection connection = null;
 
     @Override
     public boolean register(String driverName, Transformer concreteTransformer) {
+        boolean flag = true;
         if (containerTransformers.containsKey(driverName)) {
-            return false;
+            flag = false;
         }
         containerTransformers.put(driverName, concreteTransformer);
-        return true;
+        return flag;
     }
 
     @Override
     public boolean unRegister(String driverName) {
-        if (containerTransformers.containsKey(driverName)) {
-            containerTransformers.remove(driverName);
-            return true;
-        }
-        return false;
+        return containerTransformers.remove(driverName) != null;
     }
 
     @Override
     public boolean contains(String driverName) {
-        if (containerTransformers.containsKey(driverName)) {
-            return true;
-        }
-        return false;
+        return containerTransformers.containsKey(driverName);
     }
 
     @Override
-    public List<String> getRegisteredNames() {
-        List<String> transformerNames = new ArrayList<>();
-        transformerNames.addAll(containerTransformers.keySet());
-        return transformerNames;
+    public Set<String> getRegisteredNames() {
+        return containerTransformers.keySet();
     }
 
     @Override
-    public Transformer getTransformer(String typeDataBase) throws UnknownTransformerException {
-
-        Transformer result = containerTransformers.get(typeDataBase);
+    public Transformer getTransformer(String driverName) throws UnknownTransformerException {
+        Transformer result = containerTransformers.get(driverName);
         if (result == null) {
             throw new UnknownTransformerException("No such transformer");
         }

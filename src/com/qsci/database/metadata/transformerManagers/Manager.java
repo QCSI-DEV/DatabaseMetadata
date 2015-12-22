@@ -4,6 +4,7 @@ import com.qsci.database.metadata.exceptions.UnknownTransformerException;
 import com.qsci.database.metadata.transformers.Transformer;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Manager {
 
@@ -13,7 +14,7 @@ public interface Manager {
 
     boolean contains(String driverName);
 
-    List<String> getRegisteredNames();
+    Set<String> getRegisteredNames();
 
-    Transformer getTransformer(String typeDataBase) throws UnknownTransformerException;
+    Transformer getTransformer(String driverName) throws UnknownTransformerException;
 }

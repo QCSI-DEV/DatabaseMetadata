@@ -1,8 +1,7 @@
 package com.qsci.database.metadata.transformers;
 
-import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKey;
+import com.qsci.database.metadata.metaDataEntityes.model.Field;
 import com.qsci.database.metadata.metaDataEntityes.model.Table;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -13,39 +12,42 @@ import java.util.List;
 public class SQLiteTransformer implements Transformer {
 
     public static String getDriverName() {
-        return "SQLite";
+        return "org.sqlite.JDBC";
     }
-
 
     @Override
     public List<Table> getTables(Connection connection) throws SQLException {
-        final int TABLE_NAME_INDEX = 3;
-        final int COLUMN_NAME_INDEX = 4;
 
-        DatabaseMetaData meta = connection.getMetaData();
+        DatabaseMetaData metaData = connection.getMetaData();
+        ResultSet sourceTables = metaData.getTables(null, null, null, null);
+        List<Table> destinationTables = new ArrayList<>();
 
-        List<Table> resultTables = new ArrayList<Table>();
-
-        ResultSet setTables = meta.getTables(null, null, null, null);
-        while (setTables.next()) {
-            String tableName = setTables.getMetaData().getTableName(TABLE_NAME_INDEX);
-
-            ResultSet primaryKeySet = meta.getPrimaryKeys(null, null, tableName);
-            String identifier = primaryKeySet.getString(6);/*6 - get psevdonim of PK(may be null)*/
-            List<String> primaryKeyValues = new ArrayList<String>();
-            while (primaryKeySet.next()) {
-                primaryKeyValues.add(primaryKeySet.getString(COLUMN_NAME_INDEX));
+        while (sourceTables.next()) {
+            if (sourceTables.getString("TABLE_NAME").startsWith("sqlite")) {
+                continue;
             }
-            PrimaryKey primaryKey = new PrimaryKey(identifier, primaryKeyValues);
-            ResultSet foreignKeySet = meta.getExportedKeys(null, null, tableName);
-
-
-            Table table = new Table(tableName);
-            resultTables.add(table);
-            /*TO BE CONTINUED*/
+            destinationTables.add(new Table(sourceTables.getString("TABLE_NAME")));
         }
-    }
 
-    return null;
+        for (Table destinationTable : destinationTables) {
+            ResultSet sourcePrimaryKey = connection.getMetaData().getPrimaryKeys(null, null, destinationTable.getName());
+            while (sourcePrimaryKey.next()) {
+                destinationTable.getPrimaryKey().getFields().add(sourcePrimaryKey.getString("COLUMN_NAME"));
+            }
+
+            ResultSet sourceField = connection.getMetaData().getColumns(null, null, destinationTable.getName(), null);
+            while (sourceField.next()) {
+                String name = sourceField.getString("COLUMN_NAME");
+                String type = sourceField.getString("TYPE_NAME");
+                String isNullable = sourceField.getString("IS_NULLABLE");
+                String valueByDefault = sourceField.getString("COLUMN_DEF");
+                destinationTable.getFields().add(new Field(name,type,valueByDefault,isNullable,false));
+            }
+
+        }
+        return destinationTables;
+
+    }
 }
+
 

@@ -1,11 +1,5 @@
 package com.qsci.database.metadata;
 
-import com.qsci.database.metadata.exceptions.UnknownTransformerException;
-import com.qsci.database.metadata.exceptions.WrongDataForConnectException;
-import com.qsci.database.metadata.metaDataEntityes.constraints.ForeignKey;
-import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
-import com.qsci.database.metadata.metaDataEntityes.indexes.UniqueIndex;
-import com.qsci.database.metadata.metaDataEntityes.model.DefaultValue;
 import com.qsci.database.metadata.metaDataEntityes.model.Field;
 import com.qsci.database.metadata.metaDataEntityes.model.Table;
 import com.qsci.database.metadata.transformerManagers.Manager;
@@ -17,10 +11,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 
 public class Run {
-    public static void main(String[] args) throws UnknownTransformerException, WrongDataForConnectException, SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         logLn("!======================================!");
         logLn("DataBase Metadata Transformer v.0.1");
@@ -30,27 +23,25 @@ public class Run {
         Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
         Class.forName(SQLiteTransformer.getDriverName());
         UserData userData = new UserData();
-        userData.setUrl("JDBC:sqlite:personBase");
+        userData.setUrl("JDBC:sqlite:personBase.sqlite");
 
         Connection connection = DriverManager.getConnection(userData.getUrl());
         List<Table> tables = transformer.getTables(connection);
         for (Table table : tables) {
-            logLn("********************************");
-            logLn("Table name: " + table.getName());
-            logLn("********************************");
-            /*TO DO  primaryKey*/
-            /*printPrimaryKey(table);*/
+            System.out.println(table);
+            System.out.println(table.getPrimaryKey());
+            for (Field field : table.getFields()) {
+                System.out.println(field);
+            }
+            System.out.println(
 
-            List<Field> fields = table.getFields();
-
-            List<ForeignKey> foreignKeys = table.getForeignKeys();
-
-            List<Index> indexes = table.getIndexes();
-
-            List<UniqueIndex> uniqueIndexes = table.getUniqueIndexes();
-
+            );
         }
+            /*TO DO  index  | uniqueIndex | foreignKEYS*/
+            /*TO DO to Fields get "autoincremented"*/
+            /*TO DO add log4j and drop sout*/
     }
+
 
     private static void log(String text) {
         System.out.println(text);
@@ -60,8 +51,6 @@ public class Run {
     private static void logLn(String text) {
         System.out.println(text);
     }
-
-
 
 
 }

@@ -1,21 +1,17 @@
 package com.qsci.database.metadata.metaDataEntityes.model;
 
-import java.lang.reflect.Type;
-
 public class Field {
     private String name;
     private String type;
-    private boolean isChecked;
-    private boolean isUnique;
-    private boolean isNullable;
+    private String valueByDefault;
+    private String isNullable;
     private boolean isAutoIncremented;
 
-    public Field(String name, String type, boolean isChecked, boolean isUnique,
-                 boolean isNullable, boolean isAutoIncremented) {
+    public Field(String name, String type, String valueByDefault,
+                 String isNullable, boolean isAutoIncremented) {
         this.name = name;
         this.type = type;
-        this.isChecked = isChecked;
-        this.isUnique = isUnique;
+        this.valueByDefault = valueByDefault;
         this.isNullable = isNullable;
         this.isAutoIncremented = isAutoIncremented;
     }
@@ -28,15 +24,11 @@ public class Field {
         return type;
     }
 
-    public boolean isChecked() {
-        return isChecked;
+    public String getValueByDefault() {
+        return valueByDefault;
     }
 
-    public boolean isUnique() {
-        return isUnique;
-    }
-
-    public boolean isNullable() {
+    public String isNullable() {
         return isNullable;
     }
 
@@ -46,11 +38,10 @@ public class Field {
 
     @Override
     public String toString() {
-        return "Field name: " + name + "type: " + type + "(" +
+        return "Field name: " + name + " || type: " + type + "(" +
+                ("valueByDefault= " + valueByDefault) +
                 (isAutoIncremented ? " auto incremented " : " ") +
-                (isNullable ? " default null " : " ")+
-                (isUnique ? " unique " : "non unique")+
-                (isChecked ? " checked value ": " " )
-                + ")";
+                (isNullable.equals("Y") ? " nullable " : "cant be null") +
+                ")";
     }
 }

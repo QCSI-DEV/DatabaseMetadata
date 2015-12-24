@@ -21,27 +21,27 @@ public class ForeignKey {
     }
 
     public String getIdentifier() {
-        return null;
+        return identifier;
     }
 
     public String fromTable() {
-        return null;
+        return fromTable();
     }
 
     public String toTable() {
-        return null;
+        return toTable;
     }
 
     public String fromName() {
-        return null;
+        return fromName;
     }
 
     public String toName() {
-        return null;
+        return toName;
     }
 
     public ActionMechanism getActionOnUpdate() {
-        return null;
+         return null;
     }
 
     public ActionMechanism getActionOnDelete() {

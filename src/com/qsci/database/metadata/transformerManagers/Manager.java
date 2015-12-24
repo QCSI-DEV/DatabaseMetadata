@@ -10,24 +10,7 @@ public class Manager {
     final Map<String, Transformer> containerTransformers = new HashMap<>();
 
     public Manager() {
-        register(SQLiteTransformer.getDriverName(),new SQLiteTransformer());
-    }
-
-    public boolean register(String driverName, Transformer concreteTransformer) {
-        boolean flag = true;
-        if (containerTransformers.containsKey(driverName)) {
-            flag = false;
-        }
-        containerTransformers.put(driverName, concreteTransformer);
-        return flag;
-    }
-
-    public boolean unRegister(String driverName) {
-        return containerTransformers.remove(driverName) != null;
-    }
-
-    public boolean contains(String driverName) {
-        return containerTransformers.containsKey(driverName);
+        containerTransformers.put(SQLiteTransformer.getDriverName(),new SQLiteTransformer());
     }
 
     public Set<String> getRegisteredNames() {
@@ -40,5 +23,9 @@ public class Manager {
             throw new UnknownTransformerException("No such transformer");
         }
         return result;
+    }
+
+    public Map<String, Transformer> getTransformersMap() {
+        return containerTransformers;
     }
 }

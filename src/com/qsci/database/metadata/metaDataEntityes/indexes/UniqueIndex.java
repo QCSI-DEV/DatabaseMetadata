@@ -6,9 +6,9 @@ import java.util.List;
 
 public class UniqueIndex {
     private String identifier;
-    private List<Field> fields;
+    private List<String> fields;
 
-    public UniqueIndex(String identifier, List<Field> fields) {
+    public UniqueIndex(String identifier, List<String> fields) {
         this.identifier = identifier;
         this.fields = fields;
     }
@@ -17,14 +17,19 @@ public class UniqueIndex {
         return identifier;
     }
 
-    public List<Field> getFields() {
+    public List<String> getFields() {
         return fields;
     }
 
     @Override
     public String toString() {
-        return "Unique index: " +
-                (identifier.equals("null") ? " " : " identifier: " + identifier) +
-                "By fields: " + (getFields().forEach(Field::getName));
+        if (fields.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder("Unique index: ")
+                .append((identifier.equals("null") ? " " : " identifier: " + identifier))
+                .append("By fields:");
+        fields.forEach(f -> result.append(f + " "));
+        return result.toString();
     }
 }

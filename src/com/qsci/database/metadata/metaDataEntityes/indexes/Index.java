@@ -1,14 +1,12 @@
 package com.qsci.database.metadata.metaDataEntityes.indexes;
 
-import com.qsci.database.metadata.metaDataEntityes.model.Field;
-
 import java.util.List;
 
 public class Index {
     private String identifier;
-    private List<Field> fields;
+    private List<String> fields;
 
-    public Index(String identifier, List<Field> fields) {
+    public Index(String identifier, List<String> fields) {
         this.identifier = identifier;
         this.fields = fields;
     }
@@ -17,14 +15,19 @@ public class Index {
         return identifier;
     }
 
-    public List<Field> getFields() {
+    public List<String> getFields() {
         return fields;
     }
 
     @Override
     public String toString() {
-        return "Index: " +
-                (identifier.equals("null") ? " " : " identifier: " + identifier) +
-                "By fields: " + (getFields().forEach(Field::getName));
+        if (fields.isEmpty()) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder("Index: ")
+                .append((identifier.equals("null") ? " " : " identifier: " + identifier))
+                .append("By fields:");
+        fields.forEach(f -> result.append(f + " "));
+        return result.toString();
     }
 }

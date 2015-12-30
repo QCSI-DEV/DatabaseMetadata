@@ -10,9 +10,4 @@ import java.util.List;
 public interface Transformer {
 
     public List<Table> getTables(Connection connection) throws SQLException;
-
-
-
-
-
 }

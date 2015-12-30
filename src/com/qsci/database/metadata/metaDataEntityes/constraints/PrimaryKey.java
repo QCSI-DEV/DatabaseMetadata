@@ -22,7 +22,7 @@ public class PrimaryKey {
         }
         StringBuilder result = new StringBuilder("Primary Key: ").
                 append("By fields: ");
-        fields.forEach(f -> result.append(fields + " "));
+        fields.forEach(f -> result.append(f + " "));
         return result.toString();
 
     }

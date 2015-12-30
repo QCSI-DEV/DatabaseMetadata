@@ -11,21 +11,25 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLiteTransformer implements Transformer {
+public class PostgresTransformer implements Transformer {
+
+
 
     public static String getDriverName() {
-        return "org.sqlite.JDBC";
+        return "org.postgresql.Driver";
     }
 
     @Override
     public List<Table> getTables(Connection connection) throws SQLException {
 
         DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet sourceTables = metaData.getTables(null, null, null, null);
+        String schemaPattern = "public";
+        ResultSet sourceTables = metaData.getTables(null, schemaPattern, null, null);
         List<Table> destinationTables = new ArrayList<>();
 
         while (sourceTables.next()) {
-            if (sourceTables.getString("TABLE_NAME").startsWith("sqlite")) {
+            /*FILTER UNNEED TABLES*/
+            if (sourceTables.getString("TABLE_NAME").endsWith("seq")) {
                 continue;
             }
             destinationTables.add(new Table(sourceTables.getString("TABLE_NAME")));
@@ -33,12 +37,12 @@ public class SQLiteTransformer implements Transformer {
 
         for (Table destinationTable : destinationTables) {
 
-            ResultSet sourcePrimaryKey = connection.getMetaData().getPrimaryKeys(null, null, destinationTable.getName());
+            ResultSet sourcePrimaryKey = connection.getMetaData().getPrimaryKeys(null, schemaPattern, destinationTable.getName());
             while (sourcePrimaryKey.next()) {
                 destinationTable.getPrimaryKey().getFields().add(sourcePrimaryKey.getString("COLUMN_NAME"));
             }
 
-            ResultSet sourceIndexes = connection.getMetaData().getIndexInfo(null, null, destinationTable.getName(), false, false);
+            ResultSet sourceIndexes = connection.getMetaData().getIndexInfo(null, schemaPattern, destinationTable.getName(), false, false);
 
             String indexName = "";
             Index destinationIndex = null;
@@ -56,13 +60,13 @@ public class SQLiteTransformer implements Transformer {
                 }
             }
 
-            ResultSet sourceField = connection.getMetaData().getColumns(null, null, destinationTable.getName(), null);
+            ResultSet sourceField = connection.getMetaData().getColumns(null, schemaPattern, destinationTable.getName(), null);
             while (sourceField.next()) {
                 String fieldName = sourceField.getString("COLUMN_NAME");
                 String type = sourceField.getString("TYPE_NAME");
                 String isNullable = sourceField.getString("IS_NULLABLE");
                 String valueByDefault = sourceField.getString("COLUMN_DEF");
-                String isAutoincrement = "null";
+                String isAutoincrement = sourceField.getString("IS_AUTOINCREMENT");
                 destinationTable.getFields().add(new Field(fieldName, type, valueByDefault, isNullable, isAutoincrement));
             }
 
@@ -72,5 +76,3 @@ public class SQLiteTransformer implements Transformer {
          /*foreignKEYS*/
     }
 }
-
-

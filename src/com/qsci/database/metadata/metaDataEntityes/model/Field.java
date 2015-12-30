@@ -5,10 +5,10 @@ public class Field {
     private String type;
     private String valueByDefault;
     private String isNullable;
-    private boolean isAutoIncremented;
+    private String isAutoIncremented;
 
     public Field(String name, String type, String valueByDefault,
-                 String isNullable, boolean isAutoIncremented) {
+                 String isNullable, String isAutoIncremented) {
         this.name = name;
         this.type = type;
         this.valueByDefault = valueByDefault;
@@ -32,7 +32,7 @@ public class Field {
         return isNullable;
     }
 
-    public boolean isAutoincrement() {
+    public String isAutoincrement() {
         return isAutoIncremented;
     }
 
@@ -40,8 +40,8 @@ public class Field {
     public String toString() {
         return "Field name: " + name + " || type: " + type + "(" +
                 ("valueByDefault= " + valueByDefault) +
-                (isAutoIncremented ? " auto incremented " : " ") +
-                (isNullable.equals("Y") ? " nullable " : "cant be null") +
+                (isAutoIncremented.equals("true") ? " auto incremented " : "" ) +
+                (isNullable.equals("Y") ? " nullable " : "not null") +
                 ")";
     }
 }

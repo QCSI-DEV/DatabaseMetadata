@@ -44,4 +44,32 @@ public class Table {
     public String toString() {
         return "TABLE NAME: " + name + "\n";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (!(obj instanceof Table)) return false;
+
+        Table that = (Table) obj;
+
+        if (fields != null ? !fields.equals(that.fields) : that.fields != null) return false;
+        if (foreignKeys != null ? !foreignKeys.equals(that.foreignKeys) : that.foreignKeys != null) return false;
+        if (indexes != null ? !indexes.equals(that.indexes) : that.indexes != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (primaryKey != null ? !primaryKey.equals(that.primaryKey) : that.primaryKey != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (primaryKey != null ? primaryKey.hashCode() : 0);
+        result = 31 * result + (fields != null ? fields.hashCode() : 0);
+        result = 31 * result + (foreignKeys != null ? foreignKeys.hashCode() : 0);
+        result = 31 * result + (indexes != null ? indexes.hashCode() : 0);
+        return result;
+    }
 }
+

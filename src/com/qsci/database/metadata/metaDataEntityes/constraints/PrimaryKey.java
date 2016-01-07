@@ -27,6 +27,19 @@ public class PrimaryKey {
 
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (this == obj) return true;
+        if (!(obj instanceof PrimaryKey)) return false;
+        PrimaryKey that = (PrimaryKey) obj;
+        if (!fields.equals(that.fields)) return false;
+        return true;
+    }
 
+    @Override
+    public int hashCode() {
+        return fields.hashCode();
+    }
 }
 

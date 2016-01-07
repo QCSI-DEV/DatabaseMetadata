@@ -22,18 +22,18 @@ public class Run {
 
 
         logger.info("!======================================!");
-        logger.info("DataBase Metadata Transformer v.0.1");
+        logger.info("DataBase Metadata Transformer");
         logger.info("!=======================================!");
 
         Manager manager = new Manager();
-        Transformer transformer = manager.getTransformer(PostgresTransformer.getDriverName());
-        Class.forName(PostgresTransformer.getDriverName());
+        Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
+        Class.forName(SQLiteTransformer.getDriverName());
         UserData userData = new UserData();
-        /*userData.setUrl("JDBC:sqlite:personBase.sqlite");*/
-        userData.setUrl("jdbc:postgresql://localhost:5432/person");
+        userData.setUrl("JDBC:sqlite:personBase.sqlite");
+        /*userData.setUrl("jdbc:postgresql://localhost:5432/person");
         userData.setLogin("postgres");
-        userData.setPassword("******");
-        Connection connection = DriverManager.getConnection(userData.getUrl(),userData.getLogin(),userData.getPassword());
+        userData.setPassword("******");*/
+        Connection connection = DriverManager.getConnection(userData.getUrl());
         connection.getMetaData().getDatabaseProductVersion();
         String baseProductName  = connection.getMetaData().getDatabaseProductName();
         logger.debug("Data base product: " + baseProductName);
@@ -41,7 +41,6 @@ public class Run {
         for (Table table : tables) {
             logger.info(table);
             logger.info(table.getPrimaryKey());
-            logger.info(table.getIndexes());
             for (Index index : table.getIndexes()) {
                 logger.info(index);
             }

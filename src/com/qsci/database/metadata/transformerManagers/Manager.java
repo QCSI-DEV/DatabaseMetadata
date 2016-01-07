@@ -24,7 +24,7 @@ public class Manager {
     public Transformer getTransformer(String driverName) throws UnknownTransformerException {
         Transformer result = containerTransformers.get(driverName);
         if (result == null) {
-            throw new UnknownTransformerException("No such transformer");
+            throw new UnknownTransformerException("No such transformer:" + Transformer.class.getName());
         }
         return result;
     }

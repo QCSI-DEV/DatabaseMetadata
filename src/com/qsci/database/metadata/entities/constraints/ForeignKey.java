@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.metaDataEntityes.constraints;
+package com.qsci.database.metadata.entities.constraints;
 
 public class ForeignKey {
     private String identifier;

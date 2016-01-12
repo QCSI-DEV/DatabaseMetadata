@@ -1,9 +1,9 @@
 package com.qsci.database.metadata.transformers;
 
 
-import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
-import com.qsci.database.metadata.metaDataEntityes.model.Field;
-import com.qsci.database.metadata.metaDataEntityes.model.Table;
+import com.qsci.database.metadata.entities.indexes.Index;
+import com.qsci.database.metadata.entities.model.Field;
+import com.qsci.database.metadata.entities.model.Table;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,13 +14,13 @@ public abstract class Transformer {
 
     public abstract List<Table> getTables(Connection connection) throws SQLException;
 
-    public void buildPrimaryKey(Table destinationTable, ResultSet sourcePrimaryKey) throws SQLException {
+    public void indexPrimaryKey(Table destinationTable, ResultSet sourcePrimaryKey) throws SQLException {
         while (sourcePrimaryKey.next()) {
             destinationTable.getPrimaryKey().getFields().add(sourcePrimaryKey.getString("COLUMN_NAME"));
         }
     }
 
-    public void buildIndex(Table destinationTable, ResultSet sourceIndexes) throws SQLException {
+    public void insertIndex(Table destinationTable, ResultSet sourceIndexes) throws SQLException {
 
         String indexName = "";
         Index destinationIndex = null;
@@ -39,13 +39,13 @@ public abstract class Transformer {
         }
     }
 
-    public void buildField(Table destinationTable, ResultSet sourceField) throws SQLException {
+    public void insertField(Table destinationTable, ResultSet sourceField) throws SQLException {
         while (sourceField.next()) {
             String fieldName = sourceField.getString("COLUMN_NAME");
             String type = sourceField.getString("TYPE_NAME");
             String isNullable = sourceField.getString("IS_NULLABLE");
             String valueByDefault = sourceField.getString("COLUMN_DEF");
-            String isAutoincrement = "null";
+            String isAutoincrement = "not implemented yet";
             destinationTable.getFields().add(new Field(fieldName, type, valueByDefault, isNullable, isAutoincrement));
         }
     }

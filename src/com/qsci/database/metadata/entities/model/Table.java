@@ -1,8 +1,8 @@
-package com.qsci.database.metadata.metaDataEntityes.model;
+package com.qsci.database.metadata.entities.model;
 
-import com.qsci.database.metadata.metaDataEntityes.constraints.ForeignKey;
-import com.qsci.database.metadata.metaDataEntityes.constraints.PrimaryKey;
-import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
+import com.qsci.database.metadata.entities.constraints.ForeignKey;
+import com.qsci.database.metadata.entities.constraints.PrimaryKey;
+import com.qsci.database.metadata.entities.indexes.Index;
 
 import java.util.ArrayList;
 import java.util.List;

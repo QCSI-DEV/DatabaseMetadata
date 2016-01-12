@@ -1,21 +1,20 @@
-import com.qsci.database.metadata.metaDataEntityes.indexes.Index;
-import com.qsci.database.metadata.metaDataEntityes.model.Field;
-import com.qsci.database.metadata.metaDataEntityes.model.Table;
+import com.qsci.database.metadata.entities.indexes.Index;
+import com.qsci.database.metadata.entities.model.Field;
+import com.qsci.database.metadata.entities.model.Table;
 import com.qsci.database.metadata.transformerManagers.Manager;
 import com.qsci.database.metadata.transformers.SQLiteTransformer;
 import com.qsci.database.metadata.transformers.Transformer;
-import com.qsci.database.metadata.userData.UserData;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class TestSQLite {
 
@@ -27,7 +26,12 @@ public class TestSQLite {
 
     @BeforeClass
     public static void setModelTables() {
+
         Table modelTable = new Table("person");
+        /*add all*/
+        /*джаксп*/
+
+
         modelTable.getFields().add(new Field("id", "INTEGER", "null", "nullable", "null"));
         modelTable.getFields().add(new Field("lname", "VARCHAR", "null", "nullable", "null"));
         modelTable.getFields().add(new Field("fname", "VARCHAR", "null", "nullable", "null"));
@@ -50,89 +54,34 @@ public class TestSQLite {
     }
 
     @BeforeClass
-    public static void setUpDump() {
-        /*Create test.properties file*/
-        /*Remove to test.properties file*/
-        String driverLocation = "org.sqlite.JDBC";
-        String url = "JDBC:sqlite:testBase.sqlite";
+    public static void setUpDump() throws IOException, ClassNotFoundException, SQLException {
 
-        try {
-            Class.forName(driverLocation);
-        } catch (ClassNotFoundException e) {
-            Assert.fail("Wrong pass to JDBC driver: \"" + driverLocation + "\" ");
-        }
-
-        try {
-            connection = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            Assert.fail("Wrong url: \"" + url + "\" ");
-        }
-
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            Assert.fail("Error of creating statement (data base access error or calling in close connection ) ");
-        }
-
-        /*Remove to test.properties file*/
-        String dumpName = "dumpSqlite.sql";
-        File file = new File(dumpName);
-        BufferedReader in = null;
-
-        try {
-            in = new BufferedReader(new FileReader(file));
-        } catch (FileNotFoundException e) {
-            Assert.fail("Dumb file not find: \"" + dumpName + "\" ");
-        }
-
-
+        Properties testInfo = new Properties();
+        testInfo.load(new FileReader("resources/testData.properties"));
+        Class.forName(testInfo.getProperty("driver"));
+        connection = DriverManager.getConnection(testInfo.getProperty("db.testUrl"));
+        statement = connection.createStatement();
+        File file = new File(testInfo.getProperty("db.dumpUrl"));
+        BufferedReader in = new BufferedReader(new FileReader(file));
         String line;
-        try {
-            while ((line = in.readLine()) != null) {
-                try {
-                    statement.execute(line);
-                } catch (SQLException e) {
-                    Assert.fail("Wrong dump syntax.Line: \"" + line + "\" ");
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        while ((line = in.readLine()) != null) {
+            statement.execute(line);
         }
-        try {
-            ResultSet tablesSource = connection.getMetaData().getTables(null, null, null, null);
-            while (tablesSource.next()) {
-                if (tablesSource.getString("TABLE_NAME").startsWith("sqlite")) {
-                    continue;
-                }
 
-                tablesNames.add(tablesSource.getString("TABLE_NAME"));
+        ResultSet tablesSource = connection.getMetaData().getTables(null, null, null, null);
+        while (tablesSource.next()) {
+            if (tablesSource.getString("TABLE_NAME").startsWith("sqlite")) {
+                continue;
             }
-        } catch (SQLException e) {
-            Assert.fail("Input/Output error");
+
+            tablesNames.add(tablesSource.getString("TABLE_NAME"));
         }
 
         Manager manager = new Manager();
         Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
-        try {
-            Class.forName(SQLiteTransformer.getDriverName());
-        } catch (ClassNotFoundException e) {
-            Assert.fail("Wrong driver location in transformer: \"" + SQLiteTransformer.getDriverName() + "\" ");
-        }
-        UserData userData = new UserData();
-        userData.setUrl(url);
-        try {
-            List<Table> tables = transformer.getTables(connection);
-        } catch (SQLException e) {
-            Assert.fail("SQLException:" + e.getMessage());
-            /*does we got problem class, method in message?*/
-        }
-        try {
-            actualTables = transformer.getTables(connection);
-        } catch (SQLException e) {
-            Assert.fail("SQLException:" + e.getMessage());
-            /*lookUp*/
-        }
-
+        Class.forName(SQLiteTransformer.getDriverName());
+        List<Table> tables = transformer.getTables(connection);
+        actualTables = transformer.getTables(connection);
 
     }
 

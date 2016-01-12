@@ -1,6 +1,6 @@
 package com.qsci.database.metadata.transformers;
 
-import com.qsci.database.metadata.metaDataEntityes.model.Table;
+import com.qsci.database.metadata.entities.model.Table;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -37,15 +37,15 @@ public class PostgresTransformer extends Transformer {
 
             ResultSet sourcePrimaryKey =
                     connection.getMetaData().getPrimaryKeys(null, schemaPattern, destinationTable.getName());
-            buildPrimaryKey(destinationTable,sourcePrimaryKey);
+            indexPrimaryKey(destinationTable, sourcePrimaryKey);
 
             ResultSet sourceIndex =
                     connection.getMetaData().getIndexInfo(null, schemaPattern, destinationTable.getName(), false, false);
-            buildIndex(destinationTable,sourceIndex);
+            insertIndex(destinationTable, sourceIndex);
 
             ResultSet sourceField =
                     connection.getMetaData().getColumns(null, schemaPattern, destinationTable.getName(), null);
-            buildField(destinationTable,sourceField);
+            insertField(destinationTable, sourceField);
 
         }
         return destinationTables;

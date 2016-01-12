@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.metaDataEntityes.indexes;
+package com.qsci.database.metadata.entities.indexes;
 
 import java.util.ArrayList;
 import java.util.List;

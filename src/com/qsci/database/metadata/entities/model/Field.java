@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.metaDataEntityes.model;
+package com.qsci.database.metadata.entities.model;
 
 public class Field {
     private String name;

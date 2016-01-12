@@ -28,9 +28,8 @@ public class TestSQLite {
     public static void setModelTables() {
 
         Table modelTable = new Table("person");
-        /*add all*/
-        /*джаксп*/
 
+        /*JAXP (XML source) or java entity */
 
         modelTable.getFields().add(new Field("id", "INTEGER", "null", "nullable", "null"));
         modelTable.getFields().add(new Field("lname", "VARCHAR", "null", "nullable", "null"));

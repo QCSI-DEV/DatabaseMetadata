@@ -48,5 +48,15 @@ public class ForeignKey {
         return null;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        /*not implemented yet*/
+        return false;
+    }
 
+    @Override
+    public int hashCode() {
+        /*not implemented yet*/
+        return -1;
+    }
 }

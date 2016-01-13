@@ -69,7 +69,7 @@ public class Run {
             for (Index index : table.getIndexes()) {
                 logger.info(index);
             }
-            for (Field field : table.getFields()) {
+            for (Field field : table.getInde()) {
                 logger.info(field);
             }
         }

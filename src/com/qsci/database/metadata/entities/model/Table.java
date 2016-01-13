@@ -23,7 +23,7 @@ public class Table {
         return name;
     }
 
-    public List<Field> getFields() {
+    public List<Field> getInde() {
         return fields;
     }
 

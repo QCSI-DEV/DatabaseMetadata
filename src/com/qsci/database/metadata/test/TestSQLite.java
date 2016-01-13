@@ -1,111 +1,96 @@
+import com.qsci.database.metadata.entities.constraints.ForeignKey;
+import com.qsci.database.metadata.entities.constraints.PrimaryKey;
 import com.qsci.database.metadata.entities.indexes.Index;
 import com.qsci.database.metadata.entities.model.Field;
-import com.qsci.database.metadata.entities.model.Table;
-import com.qsci.database.metadata.transformerManagers.Manager;
-import com.qsci.database.metadata.transformers.SQLiteTransformer;
-import com.qsci.database.metadata.transformers.Transformer;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.*;
-import java.util.*;
+import java.util.List;
 
-public class TestSQLite {
+public class TestSQLite extends TestStructure {
 
-    static Connection connection;
-    static Statement statement;
-    final static Queue<String> tablesNames = new ArrayDeque<>();
-    final static List<Table> expectedTables = new ArrayList<>();
-    static List<Table> actualTables;
 
-    @BeforeClass
-    public static void setModelTables() {
 
-        Table modelTable = new Table("person");
-
-        /*JAXP (XML source) or java entity */
-
-        modelTable.getFields().add(new Field("id", "INTEGER", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("lname", "VARCHAR", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("fname", "VARCHAR", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("postal_code", "SMALLINT(6)", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("food_id", "SMALLINT", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("bank_id", "SMALLINT", "null", "nullable", "null"));
-        modelTable.getPrimaryKey().getFields().add("id");
-        expectedTables.add(modelTable);
-        modelTable = new Table("favourite_food");
-        modelTable.getFields().add(new Field("person_id", "INTEGER", "null", "nullable", "null"));
-        modelTable.getFields().add(new Field("name", "VARCHAR", "null", "nullable", "null"));
-        modelTable.getPrimaryKey().getFields().add("person_id");
-        modelTable.getPrimaryKey().getFields().add("name");
-        Index index = new Index("sqlite_autoindex_favourite_food_1", true);
-        index.getFields().add("person_id");
-        index.getFields().add("name");
-        modelTable.getIndexes().add(index);
-        expectedTables.add(modelTable);
-
-    }
-
-    @BeforeClass
-    public static void setUpDump() throws IOException, ClassNotFoundException, SQLException {
-
-        Properties testInfo = new Properties();
-        testInfo.load(new FileReader("resources/testData.properties"));
-        Class.forName(testInfo.getProperty("driver"));
-        connection = DriverManager.getConnection(testInfo.getProperty("db.testUrl"));
-        statement = connection.createStatement();
-        File file = new File(testInfo.getProperty("db.dumpUrl"));
-        BufferedReader in = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = in.readLine()) != null) {
-            statement.execute(line);
-        }
-
-        ResultSet tablesSource = connection.getMetaData().getTables(null, null, null, null);
-        while (tablesSource.next()) {
-            if (tablesSource.getString("TABLE_NAME").startsWith("sqlite")) {
-                continue;
+    @Override
+    public void testForeignKeysCollector() {
+        int posTable = 0;
+        int posFK = 0;
+        List<ForeignKey> expectedKeys;
+        List<ForeignKey> actualKeys;
+        while (posTable < expectedTables.size()) {
+            expectedKeys = expectedTables.get(posTable).getForeignKeys();
+            actualKeys = actualTables.get(posTable).getForeignKeys();
+            posTable++;
+            if (actualKeys.size() != expectedKeys.size()) {
+                Assert.fail("TO DO");
             }
-
-            tablesNames.add(tablesSource.getString("TABLE_NAME"));
+            while (posFK < expectedKeys.size()) {
+                ForeignKey expectedKey = expectedKeys.get(posFK);
+                ForeignKey actualKey = actualKeys.get(posFK);
+                String message = "TO DO";
+                Assert.assertEquals(message,expectedKey,actualKey);
+                posFK++;
+            }
         }
 
-        Manager manager = new Manager();
-        Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
-        Class.forName(SQLiteTransformer.getDriverName());
-        List<Table> tables = transformer.getTables(connection);
-        actualTables = transformer.getTables(connection);
 
     }
 
-    @Test
-    public void testTables() {
-        if (expectedTables.size() != actualTables.size()) {
-            String message = "Actual size: " + actualTables.size() + ".Model size: " + expectedTables.size();
-            Assert.fail("Different quantity actual and expected tables. " + message);
-        }
-        for (int pos = 0; pos < expectedTables.size() - 1; pos++) {
-            Table actualTable = actualTables.get(pos);
-            Table expectedTable = expectedTables.get(pos);
-            Assert.assertEquals(expectedTable, actualTable);
+    @Override
+    public void testPrimaryKeysCollector() {
+        int pos = 0;
+        while (pos < expectedTables.size()) {
+            PrimaryKey expectedKey = expectedTables.get(pos).getPrimaryKey();
+            PrimaryKey actualKey = actualTables.get(pos).getPrimaryKey();
+            String message = "TO DO";
+            Assert.assertEquals(message, expectedKey, actualKey);
+            pos++;
         }
     }
 
-    @AfterClass
-    public static void tearDownDump() {
-        while (!tablesNames.isEmpty()) {
-            try {
-                statement.execute("DROP TABLE " + tablesNames.remove());
-            } catch (SQLException e) {
-                e.printStackTrace();
+    @Override
+    public void testFieldsCollector() {
+        int posTable = 0;
+        int posField = 0;
+        List<Field> expectedFields;
+        List<Field> actualFields;
+        while (posTable < expectedTables.size()) {
+            expectedFields = expectedTables.get(posTable).getInde();
+            actualFields = actualTables.get(posTable).getInde();
+            posTable++;
+            if (actualFields.size() != expectedFields.size()) {
+                Assert.fail("TO DO");
+            }
+            while (posField < expectedFields.size()) {
+                Field expectedField = expectedFields.get(posField);
+                Field actualField = actualFields.get(posField);
+                String message = "TO DO";
+                Assert.assertEquals(message,expectedField,actualField);
+                posField++;
             }
         }
     }
 
+    @Override
+    public void testIndexesCollector() {
+        int posTable = 0;
+        int posIndex = 0;
+        List<Index> expectedIndex;
+        List<Index> actualIndex;
+        while (posTable < expectedTables.size()) {
+            expectedIndex = expectedTables.get(posTable).getIndexes();
+            actualIndex = actualTables.get(posTable).getIndexes();
+            posTable++;
+            if (actualIndex.size() != expectedIndex.size()) {
+                Assert.fail("TO DO");
+            }
+            while (posIndex < expectedIndex.size()) {
+                Index expectedField = expectedIndex.get(posIndex);
+                Index actualField = actualIndex.get(posIndex);
+                String message = "TO DO";
+                Assert.assertEquals(message,expectedField,actualField);
+                posIndex++;
+            }
+        }
+
+    }
 }

@@ -46,7 +46,7 @@ public abstract class Transformer {
             String isNullable = sourceField.getString("IS_NULLABLE");
             String valueByDefault = sourceField.getString("COLUMN_DEF");
             String isAutoincrement = "not implemented yet";
-            destinationTable.getFields().add(new Field(fieldName, type, valueByDefault, isNullable, isAutoincrement));
+            destinationTable.getInde().add(new Field(fieldName, type, valueByDefault, isNullable, isAutoincrement));
         }
     }
 }

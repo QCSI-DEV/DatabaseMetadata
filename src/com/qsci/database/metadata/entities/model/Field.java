@@ -5,35 +5,15 @@ public class Field {
     private String type;
     private String valueByDefault;
     private String isNullable;
-    private String isAutoIncremented;
+    private String isAutoIncrement;
 
     public Field(String name, String type, String valueByDefault,
-                 String isNullable, String isAutoIncremented) {
+                 String isNullable, String isAutoIncrement) {
         this.name = name;
         this.type = type;
         this.valueByDefault = valueByDefault;
         this.isNullable = isNullable;
-        this.isAutoIncremented = isAutoIncremented;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public String getValueByDefault() {
-        return valueByDefault;
-    }
-
-    public String isNullable() {
-        return isNullable;
-    }
-
-    public String isAutoincrement() {
-        return isAutoIncremented;
+        this.isAutoIncrement = isAutoIncrement;
     }
 
     @Override
@@ -43,7 +23,7 @@ public class Field {
 
         Field that = (Field) obj;
 
-        if (isAutoIncremented != null ? !isAutoIncremented.equals(that.isAutoIncremented) : that.isAutoIncremented != null)
+        if (isAutoIncrement != null ? !isAutoIncrement.equals(that.isAutoIncrement) : that.isAutoIncrement != null)
             return false;
         if (isNullable != null ? !isNullable.equals(that.isNullable) : that.isNullable != null) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -60,7 +40,7 @@ public class Field {
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (valueByDefault != null ? valueByDefault.hashCode() : 0);
         result = 31 * result + (isNullable != null ? isNullable.hashCode() : 0);
-        result = 31 * result + (isAutoIncremented != null ? isAutoIncremented.hashCode() : 0);
+        result = 31 * result + (isAutoIncrement != null ? isAutoIncrement.hashCode() : 0);
         return result;
     }
 
@@ -68,7 +48,7 @@ public class Field {
     public String toString() {
         return "Field name: " + name + " || type: " + type + "(" +
                 ("valueByDefault= " + valueByDefault) +
-                (isAutoIncremented.equals("true") ? " auto incremented " : "" ) +
+                (isAutoIncrement.equals("true") ? " auto incremented " : "" ) +
                 (isNullable.equals("Y") ? " nullable " : "not null") +
                 ")";
 

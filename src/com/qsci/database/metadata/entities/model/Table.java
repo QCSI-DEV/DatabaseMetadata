@@ -19,26 +19,25 @@ public class Table {
         this.name = name;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<Field> getInde() {
-        return fields;
+    public List<Index> getIndexes() {
+        return indexes;
     }
 
     public List<ForeignKey> getForeignKeys() {
         return foreignKeys;
     }
 
+    public List<Field> getFields() {
+        return fields;
+    }
+
     public PrimaryKey getPrimaryKey() {
         return primaryKey;
     }
 
-    public List<Index> getIndexes() {
-        return indexes;
+    public String getName() {
+        return name;
     }
-
 
     @Override
     public String toString() {

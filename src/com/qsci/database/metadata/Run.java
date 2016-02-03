@@ -1,5 +1,6 @@
 package com.qsci.database.metadata;
 
+import com.qsci.database.metadata.entities.constraints.ForeignKey;
 import com.qsci.database.metadata.entities.indexes.Index;
 import com.qsci.database.metadata.entities.model.Field;
 import com.qsci.database.metadata.entities.model.Table;
@@ -21,20 +22,17 @@ public class Run {
     public final static Logger logger = Logger.getLogger(Run.class);
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+        Manager manager = new Manager();
+        Connection connection;
 
 
         logger.info("!======================================!");
         logger.info("DataBase Metadata Transformer");
         logger.info("!=======================================!");
 
-        Manager manager = new Manager();
         Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
         Class.forName(SQLiteTransformer.getDriverName());
-        /*userData.setUrl("jdbc:postgresql://localhost:5432/person");
-        userData.setLogin("postgres");
-        userData.setPassword("******");*/
-        /*properties = delete user data*/
-        Connection connection;
+
         Properties properties = new Properties();
         String userDataLocation = "resources/data.properties";
         String url = null;
@@ -63,17 +61,21 @@ public class Run {
         String baseProductName = connection.getMetaData().getDatabaseProductName();
         logger.debug("Data base product: " + baseProductName);
         List<Table> tables = transformer.getTables(connection);
+        System.out.println(tables);
         for (Table table : tables) {
-            logger.info(table);
+            for (Field field : table.getFields()) {
+                logger.info(field);
+            }
             logger.info(table.getPrimaryKey());
+                logger.info(table.getPrimaryKey());
+            logger.info(table);
+            for (ForeignKey foreignKey : table.getForeignKeys()) {
+                logger.info(foreignKey);
+            }
             for (Index index : table.getIndexes()) {
                 logger.info(index);
             }
-            for (Field field : table.getInde()) {
-                logger.info(field);
-            }
         }
-
 
     }
 

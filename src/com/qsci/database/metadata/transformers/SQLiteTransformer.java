@@ -31,9 +31,14 @@ public class SQLiteTransformer extends Transformer {
 
         for (Table destinationTable : destinationTables) {
 
+
             ResultSet sourcePrimaryKey =
                     connection.getMetaData().getPrimaryKeys(null, null, destinationTable.getName());
-            indexPrimaryKey(destinationTable, sourcePrimaryKey);
+            insertPrimaryKey(destinationTable, sourcePrimaryKey);
+
+            DatabaseMetaData sourceMetadata =
+                    connection.getMetaData();
+            insertForeignKeys(destinationTable,sourceMetadata);
 
             ResultSet sourceIndex =
                     connection.getMetaData().getIndexInfo(null, null, destinationTable.getName(), false, false);
@@ -45,8 +50,7 @@ public class SQLiteTransformer extends Transformer {
 
         }
         return destinationTables;
-         /*TO DO*/
-         /*foreignKEYS*/
+
     }
 
 

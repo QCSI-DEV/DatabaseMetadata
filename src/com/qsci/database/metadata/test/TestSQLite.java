@@ -1,96 +1,71 @@
-import com.qsci.database.metadata.entities.constraints.ForeignKey;
-import com.qsci.database.metadata.entities.constraints.PrimaryKey;
-import com.qsci.database.metadata.entities.indexes.Index;
-import com.qsci.database.metadata.entities.model.Field;
+package com.qsci.database.metadata.test;
+
+import com.qsci.database.metadata.entities.model.Table;
+import com.qsci.database.metadata.test.entities.TestEntities;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Queue;
 
-public class TestSQLite extends TestStructure {
-
-
-
-    @Override
-    public void testForeignKeysCollector() {
-        int posTable = 0;
-        int posFK = 0;
-        List<ForeignKey> expectedKeys;
-        List<ForeignKey> actualKeys;
-        while (posTable < expectedTables.size()) {
-            expectedKeys = expectedTables.get(posTable).getForeignKeys();
-            actualKeys = actualTables.get(posTable).getForeignKeys();
-            posTable++;
-            if (actualKeys.size() != expectedKeys.size()) {
-                Assert.fail("TO DO");
-            }
-            while (posFK < expectedKeys.size()) {
-                ForeignKey expectedKey = expectedKeys.get(posFK);
-                ForeignKey actualKey = actualKeys.get(posFK);
-                String message = "TO DO";
-                Assert.assertEquals(message,expectedKey,actualKey);
-                posFK++;
-            }
-        }
+public class TestSQLite{
+    private static Connection connection;
+    private static TestEntities SQLIteModels;
+    private static TestStructure structure= new TestStructure();
 
 
+    @BeforeClass
+    public static void setUp() throws SQLException, IOException, ClassNotFoundException {
+        connection = TestManager.getConnection(("resources/testSQLite.properties"));
+        SQLIteModels = TestManager.getEntities(connection, "resources/testSQLite.properties");
     }
 
-    @Override
-    public void testPrimaryKeysCollector() {
-        int pos = 0;
-        while (pos < expectedTables.size()) {
-            PrimaryKey expectedKey = expectedTables.get(pos).getPrimaryKey();
-            PrimaryKey actualKey = actualTables.get(pos).getPrimaryKey();
-            String message = "TO DO";
-            Assert.assertEquals(message, expectedKey, actualKey);
-            pos++;
-        }
+    @Test
+    public void testForeignKeys() throws SQLException, IOException, ClassNotFoundException {
+        List<Table> actual = SQLIteModels.getActual();
+        List<Table> expected = SQLIteModels.getExpected();;
+        structure.testForeignKey(expected, actual);
+    }
+    @Test
+    public void testPrimaryKeys() throws SQLException, IOException, ClassNotFoundException {
+        List<Table> actual = SQLIteModels.getActual();
+        List<Table> expected = SQLIteModels.getExpected();
+        structure.testPrimaryKey(expected, actual);
+    }
+    @Test
+    public void testIndexes() throws SQLException, IOException, ClassNotFoundException {
+        List<Table> actual = SQLIteModels.getActual();
+        List<Table> expected = SQLIteModels.getExpected();
+        structure.testIndex(expected, actual);
+    }
+    @Test
+    public void testFields() throws SQLException, IOException, ClassNotFoundException {
+        List<Table> actual = SQLIteModels.getActual();
+        List<Table> expected = SQLIteModels.getExpected();
+        structure.testField(expected, actual);
     }
 
-    @Override
-    public void testFieldsCollector() {
-        int posTable = 0;
-        int posField = 0;
-        List<Field> expectedFields;
-        List<Field> actualFields;
-        while (posTable < expectedTables.size()) {
-            expectedFields = expectedTables.get(posTable).getInde();
-            actualFields = actualTables.get(posTable).getInde();
-            posTable++;
-            if (actualFields.size() != expectedFields.size()) {
-                Assert.fail("TO DO");
-            }
-            while (posField < expectedFields.size()) {
-                Field expectedField = expectedFields.get(posField);
-                Field actualField = actualFields.get(posField);
-                String message = "TO DO";
-                Assert.assertEquals(message,expectedField,actualField);
-                posField++;
-            }
-        }
-    }
+    @AfterClass
+    public static void tearDown() throws SQLException, IOException, ClassNotFoundException {
+        List<Table> actual = SQLIteModels.getActual();
+        List<Table> expected = SQLIteModels.getExpected();
+        structure.testTable(expected,actual);
+        Queue<String> tablesNames = SQLIteModels.getTablesNames(actual);
 
-    @Override
-    public void testIndexesCollector() {
-        int posTable = 0;
-        int posIndex = 0;
-        List<Index> expectedIndex;
-        List<Index> actualIndex;
-        while (posTable < expectedTables.size()) {
-            expectedIndex = expectedTables.get(posTable).getIndexes();
-            actualIndex = actualTables.get(posTable).getIndexes();
-            posTable++;
-            if (actualIndex.size() != expectedIndex.size()) {
-                Assert.fail("TO DO");
-            }
-            while (posIndex < expectedIndex.size()) {
-                Index expectedField = expectedIndex.get(posIndex);
-                Index actualField = actualIndex.get(posIndex);
-                String message = "TO DO";
-                Assert.assertEquals(message,expectedField,actualField);
-                posIndex++;
-            }
+        Statement statement = connection.createStatement();
+        while (!tablesNames.isEmpty()) {
+            statement.execute("DROP TABLE " + tablesNames.remove());
         }
+        File actualFile = TestManager.getActualFile("resources/testSQLite.properties");
+        actualFile.delete();
+
 
     }
 }

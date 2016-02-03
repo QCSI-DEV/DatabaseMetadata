@@ -19,14 +19,14 @@ public class PostgresTransformer extends Transformer {
 
     @Override
     public List<Table> getTables(Connection connection) throws SQLException {
-
-        DatabaseMetaData metaData = connection.getMetaData();
         String schemaPattern = "public";
-        ResultSet sourceTables = metaData.getTables(null, schemaPattern, null, null);
+        ResultSet sourceTables = connection.getMetaData().getTables(null, schemaPattern, null, null);
         List<Table> destinationTables = new ArrayList<>();
+        String  schema = connection.getSchema();
+        String catalog = connection.getCatalog();
+
 
         while (sourceTables.next()) {
-            /*FILTER UNNEED TABLES*/
             if (sourceTables.getString("TABLE_NAME").endsWith("seq")) {
                 continue;
             }
@@ -34,22 +34,24 @@ public class PostgresTransformer extends Transformer {
         }
 
         for (Table destinationTable : destinationTables) {
+            connection.getMetaData().getExportedKeys(catalog, schemaPattern, destinationTable.getName());
+            DatabaseMetaData metaData = connection.getMetaData();
+            insertForeignKeys(destinationTable,metaData);
 
             ResultSet sourcePrimaryKey =
-                    connection.getMetaData().getPrimaryKeys(null, schemaPattern, destinationTable.getName());
-            indexPrimaryKey(destinationTable, sourcePrimaryKey);
+                    connection.getMetaData().getPrimaryKeys(catalog, schemaPattern, destinationTable.getName());
+            insertPrimaryKey(destinationTable, sourcePrimaryKey);
 
             ResultSet sourceIndex =
-                    connection.getMetaData().getIndexInfo(null, schemaPattern, destinationTable.getName(), false, false);
+                    connection.getMetaData().getIndexInfo(catalog, schemaPattern, destinationTable.getName(), false, false);
             insertIndex(destinationTable, sourceIndex);
 
             ResultSet sourceField =
-                    connection.getMetaData().getColumns(null, schemaPattern, destinationTable.getName(), null);
+                    connection.getMetaData().getColumns(catalog, schemaPattern, destinationTable.getName(), null);
             insertField(destinationTable, sourceField);
 
         }
         return destinationTables;
-         /*TO DO*/
-         /*foreignKEYS*/
+
     }
 }

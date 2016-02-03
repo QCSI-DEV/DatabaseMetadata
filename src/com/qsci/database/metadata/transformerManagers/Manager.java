@@ -6,11 +6,13 @@ import com.qsci.database.metadata.transformers.SQLiteTransformer;
 import com.qsci.database.metadata.transformers.Transformer;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 public class Manager {
     final Map<String, Transformer> containerTransformers = new HashMap<>();
+
 
     public Manager() {
         containerTransformers.put(SQLiteTransformer.getDriverName(), new SQLiteTransformer());

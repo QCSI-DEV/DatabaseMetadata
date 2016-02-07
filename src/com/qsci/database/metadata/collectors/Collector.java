@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.transformers;
+package com.qsci.database.metadata.collectors;
 
 import com.qsci.database.metadata.entities.constraints.ActionOnDelete;
 import com.qsci.database.metadata.entities.constraints.ActionOnUpdate;
@@ -13,10 +13,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-public abstract class Transformer {
+public abstract class Collector {
 
     public abstract List<Table> getTables(Connection connection) throws SQLException;
-
 
     public void insertForeignKeys(Table destinationTable, DatabaseMetaData sourceMetaData) throws SQLException {
         ResultSet exportedKeys = sourceMetaData.getExportedKeys(null, null, destinationTable.getName());
@@ -37,7 +36,6 @@ public abstract class Transformer {
         }
 
     }
-
 
     public void insertPrimaryKey(Table destinationTable, ResultSet sourcePrimaryKey) throws SQLException {
         while (sourcePrimaryKey.next()) {
@@ -71,7 +69,7 @@ public abstract class Transformer {
             String isNullable = sourceField.getString("IS_NULLABLE");
             String valueByDefault = sourceField.getString("COLUMN_DEF");
             String isAutoincrement = "not implemented yet";
-            destinationTable.getFields().add(new Field(fieldName, type, valueByDefault, isNullable, isAutoincrement));
+            destinationTable.getFields().add(new Field(fieldName, type, valueByDefault, isNullable));
         }
     }
 }

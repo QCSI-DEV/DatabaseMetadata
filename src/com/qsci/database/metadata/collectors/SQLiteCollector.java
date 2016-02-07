@@ -1,4 +1,4 @@
-package com.qsci.database.metadata.transformers;
+package com.qsci.database.metadata.collectors;
 
 import com.qsci.database.metadata.entities.model.Table;
 
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SQLiteTransformer extends Transformer {
+public class SQLiteCollector extends Collector {
 
     public static String getDriverName() {
         return "org.sqlite.JDBC";
@@ -17,23 +17,21 @@ public class SQLiteTransformer extends Transformer {
 
     @Override
     public List<Table> getTables(Connection connection) throws SQLException {
-
         DatabaseMetaData metaData = connection.getMetaData();
+        String catalog = connection.getCatalog();
         ResultSet sourceTables = metaData.getTables(null, null, null, null);
         List<Table> destinationTables = new ArrayList<>();
 
         while (sourceTables.next()) {
-            if (sourceTables.getString("TABLE_NAME").startsWith("sqlite")) {
-                continue;
+            if (!sourceTables.getString("TABLE_NAME").startsWith("sqlite")) {
+                destinationTables.add(new Table(sourceTables.getString("TABLE_NAME")));
             }
-            destinationTables.add(new Table(sourceTables.getString("TABLE_NAME")));
         }
 
         for (Table destinationTable : destinationTables) {
 
-
             ResultSet sourcePrimaryKey =
-                    connection.getMetaData().getPrimaryKeys(null, null, destinationTable.getName());
+                    connection.getMetaData().getPrimaryKeys(catalog, null, destinationTable.getName());
             insertPrimaryKey(destinationTable, sourcePrimaryKey);
 
             DatabaseMetaData sourceMetadata =
@@ -41,11 +39,11 @@ public class SQLiteTransformer extends Transformer {
             insertForeignKeys(destinationTable,sourceMetadata);
 
             ResultSet sourceIndex =
-                    connection.getMetaData().getIndexInfo(null, null, destinationTable.getName(), false, false);
+                    connection.getMetaData().getIndexInfo(catalog, null, destinationTable.getName(), false, false);
             insertIndex(destinationTable, sourceIndex);
 
             ResultSet sourceField =
-                    connection.getMetaData().getColumns(null, null, destinationTable.getName(), null);
+                    connection.getMetaData().getColumns(catalog, null, destinationTable.getName(), null);
             insertField(destinationTable, sourceField);
 
         }

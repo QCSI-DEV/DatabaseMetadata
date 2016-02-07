@@ -6,24 +6,22 @@ import com.qsci.database.metadata.entities.constraints.ForeignKey;
 import com.qsci.database.metadata.entities.indexes.Index;
 import com.qsci.database.metadata.entities.model.Field;
 import com.qsci.database.metadata.entities.model.Table;
-import com.qsci.database.metadata.transformerManagers.Manager;
-import com.qsci.database.metadata.transformers.SQLiteTransformer;
-import com.qsci.database.metadata.transformers.Transformer;
+import com.qsci.database.metadata.collectorManagers.Manager;
+import com.qsci.database.metadata.collectors.SQLiteCollector;
+import com.qsci.database.metadata.collectors.Collector;
 
 import java.io.*;
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-public class SQLiteEntities implements TestEntities {
+public class SQLiteEntities extends TestEntities {
     private List<Table> actual;
     private List<Table> expected;
     private Connection connection;
     private String dumpUrl;
 
-    public SQLiteEntities(Connection connection, String dumpUrl) throws SQLException, IOException, ClassNotFoundException {
+    public SQLiteEntities(Connection connection, String dumpUrl) throws Exception {
         this.connection = connection;
         this.dumpUrl = dumpUrl;
         actual = createActual(this.connection, this.dumpUrl);
@@ -40,25 +38,7 @@ public class SQLiteEntities implements TestEntities {
         return actual;
     }
 
-    @Override
-    public Queue<String> getTablesNames(List<Table> actual){
-        Queue<String> tablesNames = new ArrayDeque<String>();
-        for (Table actualTable : actual ){
-            if (!actualTable.getName().startsWith("sqlite")) {
-                tablesNames.add(actualTable.getName());
-            }
-        }
-        return tablesNames;
-    }
-
-    @Override
-    public Properties getConfig() throws IOException {
-        Properties testConfig = new Properties();
-        testConfig.load(new FileReader("resources/testSQLite.properties"));
-        return testConfig;
-    }
-
-    private static List<Table> createActual(Connection connection, String dumpUrl) throws SQLException, IOException, ClassNotFoundException {
+    private static List<Table> createActual(Connection connection, String dumpUrl) throws Exception {
         Statement statement = connection.createStatement();
         File file = new File(dumpUrl);
         BufferedReader in = new BufferedReader(new FileReader(file));
@@ -67,20 +47,20 @@ public class SQLiteEntities implements TestEntities {
             statement.execute(line);
         }
         Manager manager = new Manager();
-        Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
-        Class.forName(SQLiteTransformer.getDriverName());
-        return transformer.getTables(connection);
+        Collector collector = manager.getTransformer(SQLiteCollector.getDriverName());
+        Class.forName(SQLiteCollector.getDriverName());
+        return collector.getTables(connection);
     }
 
     private static List<Table> createExpected() {
         List<Table> expected = new ArrayList<>();
         Table table = new Table("person");
-        table.getFields().add(new Field("id", "INTEGER", "null", "Y", "null"));
-        table.getFields().add(new Field("lname", "VARCHAR", "null", "nullable", "null"));
-        table.getFields().add(new Field("fname", "VARCHAR", "null", "nullable", "null"));
-        table.getFields().add(new Field("postal_code", "SMALLINT(6)", "null", "nullable", "null"));
-        table.getFields().add(new Field("food_id", "SMALLINT", "null", "nullable", "null"));
-        table.getFields().add(new Field("bank_id", "SMALLINT", "null", "nullable", "null"));
+        table.getFields().add(new Field("id", "INTEGER", "null", "Y"));
+        table.getFields().add(new Field("lname", "VARCHAR", "null", "Y"));
+        table.getFields().add(new Field("fname", "VARCHAR", "null", "Y"));
+        table.getFields().add(new Field("postal_code", "SMALLINT(6)", "null", "Y"));
+        table.getFields().add(new Field("food_id", "SMALLINT", "null", "Y"));
+        table.getFields().add(new Field("bank_id", "SMALLINT", "null", "Y"));
         table.getPrimaryKey().getFields().add("id");
 
         ActionOnUpdate KeyOnUpdate = new ActionOnUpdate("3");
@@ -91,8 +71,8 @@ public class SQLiteEntities implements TestEntities {
 
         expected.add(table);
         table = new Table("favourite_food");
-        table.getFields().add(new Field("person_id", "INTEGER", "null", "nullable", "null"));
-        table.getFields().add(new Field("name", "VARCHAR", "null", "nullable", "null"));
+        table.getFields().add(new Field("person_id", "INTEGER", "null", "nullable"));
+        table.getFields().add(new Field("name", "VARCHAR", "null", "nullable"));
         table.getPrimaryKey().getFields().add("person_id");
         table.getPrimaryKey().getFields().add("name");
         Index index = new Index("sqlite_autoindex_favourite_food_1", true);

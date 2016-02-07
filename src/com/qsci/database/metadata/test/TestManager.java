@@ -1,21 +1,15 @@
 package com.qsci.database.metadata.test;
 
-import com.qsci.database.metadata.entities.model.Table;
-import com.qsci.database.metadata.test.entities.PostgresEntities;
+import com.qsci.database.metadata.exceptions.NoConnectionExceptions;
 import com.qsci.database.metadata.test.entities.SQLiteEntities;
 import com.qsci.database.metadata.test.entities.TestEntities;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Properties;
 
 public class TestManager {
@@ -27,17 +21,21 @@ public class TestManager {
         String driver = testConfig.getProperty("driver");
         Class.forName(driver);
         if (driver.equals("org.sqlite.JDBC")) {
-            connection = DriverManager.getConnection(testConfig.getProperty("db.testUrl"));
+            String url = "JDBC:sqlite:" + testConfig.getProperty("db.testUrl");
+            connection = DriverManager.getConnection(url);
+            return connection;
         } else if (driver.equals("org.postgresql.Driver")) {
-            String url = testConfig.getProperty("db.url");
+            String url = testConfig.getProperty("db.testUrl");
             String login = testConfig.getProperty("db.login");
             String password = testConfig.getProperty("db.password");
             connection = DriverManager.getConnection(url, login, password);
+            return connection;
         }
-        return connection;
+        String message = "cant get connection to: " + driver;
+        throw new NoConnectionExceptions(message);
     }
 
-    public static TestEntities getEntities(Connection connection, String testConfigPath) throws IOException, SQLException, ClassNotFoundException {
+    public static TestEntities getEntities(Connection connection, String testConfigPath) throws Exception {
         TestEntities model = null;
         Properties testConfig = new Properties();
         testConfig.load(new FileInputStream(testConfigPath));
@@ -47,12 +45,11 @@ public class TestManager {
             model = new SQLiteEntities(connection, dumpUrl);
         } else if (driver.equals("org.postgresql.Driver")) {
             /*not implemented yet*/
-            /*model = new PostgresEntities(connection, dumpUrl);*/
         }
         return model;
     }
 
-    public static File getActualFile(String testConfigPath) throws IOException {
+    public static File getDumpRecoveryFile(String testConfigPath) throws IOException {
         Properties testConfig = new Properties();
         testConfig.load(new FileInputStream(new File(testConfigPath)));
         String testBaseUrl = testConfig.getProperty("db.testUrl");

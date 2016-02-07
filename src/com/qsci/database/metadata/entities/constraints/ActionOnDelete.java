@@ -6,35 +6,16 @@ public class ActionOnDelete{
 
     public ActionOnDelete(String actionIfModify) {
 
-        this.actionIfModify = createMessage(actionIfModify);
+        this.actionIfModify = setAction(actionIfModify);
     }
 
     public String getActionIfModify() {
         return actionIfModify;
     }
 
-    private String createMessage(String actionIfModify) {
-        if (actionIfModify.equals("1")) {
-            return "NoAction";
-        }
-        if (actionIfModify.equals("2")) {
-            return "KeyCascade";
-        }
-        if (actionIfModify.equals("3")) {
-            return "KeySetNull";
-        }
-        if (actionIfModify.equals("4")) {
-            return "KeyRestrict";
-        }
-        if (actionIfModify.equals("5")) {
-            return "KeySetDefault";
-        }
-        return "operation not supported";
-    }
-
     @Override
     public String toString() {
-        return "ActionOnDelete " + actionIfModify;
+        return actionIfModify;
     }
 
     @Override
@@ -53,6 +34,25 @@ public class ActionOnDelete{
     @Override
     public int hashCode() {
         return actionIfModify != null ? actionIfModify.hashCode() : 0;
+    }
+
+    private String setAction(String actionIfModify) {
+        if (actionIfModify.equals("1")) {
+            return "NoAction";
+        }
+        if (actionIfModify.equals("2")) {
+            return "KeyCascade";
+        }
+        if (actionIfModify.equals("3")) {
+            return "KeySetNull";
+        }
+        if (actionIfModify.equals("4")) {
+            return "KeyRestrict";
+        }
+        if (actionIfModify.equals("5")) {
+            return "KeySetDefault";
+        }
+        return "operation not supported";
     }
 }
 

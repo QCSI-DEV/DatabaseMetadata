@@ -30,7 +30,7 @@ public class Index {
         StringBuilder result = new StringBuilder("Index: ")
                 .append((identifier.equals("null") ? " " : " name= " + identifier))
                 .append(isUnique ? " unique " : "non unique ")
-                .append("By fields:");
+                .append("by fields:");
         fields.forEach(field -> result.append(field + " "));
         return result.toString();
     }

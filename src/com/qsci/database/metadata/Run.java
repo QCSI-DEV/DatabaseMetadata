@@ -1,12 +1,13 @@
 package com.qsci.database.metadata;
 
+import com.qsci.database.metadata.collectorManagers.Manager;
+import com.qsci.database.metadata.collectors.Collector;
+import com.qsci.database.metadata.collectors.PostgresCollector;
+import com.qsci.database.metadata.collectors.SQLiteCollector;
 import com.qsci.database.metadata.entities.constraints.ForeignKey;
 import com.qsci.database.metadata.entities.indexes.Index;
 import com.qsci.database.metadata.entities.model.Field;
 import com.qsci.database.metadata.entities.model.Table;
-import com.qsci.database.metadata.transformerManagers.Manager;
-import com.qsci.database.metadata.transformers.SQLiteTransformer;
-import com.qsci.database.metadata.transformers.Transformer;
 import org.apache.log4j.Logger;
 
 import java.io.FileInputStream;
@@ -21,54 +22,55 @@ public class Run {
 
     public final static Logger logger = Logger.getLogger(Run.class);
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, SQLException {
         Manager manager = new Manager();
         Connection connection;
 
-
         logger.info("!======================================!");
-        logger.info("DataBase Metadata Transformer");
+        logger.info("DataBase Metadata Collector");
         logger.info("!=======================================!");
 
-        Transformer transformer = manager.getTransformer(SQLiteTransformer.getDriverName());
-        Class.forName(SQLiteTransformer.getDriverName());
+        Collector collector = null;
 
         Properties properties = new Properties();
-        String userDataLocation = "resources/data.properties";
+        String configUrl = "resources/data.properties";
         String url = null;
         String login = null;
         String password = null;
 
         try {
-            FileInputStream in = new FileInputStream(userDataLocation);
-            properties.load(in);
-            url = properties.getProperty("db.url");
-            login = properties.getProperty("db.login");
-            password = properties.getProperty("db.password");
-
+            FileInputStream config = new FileInputStream(configUrl);
+            properties.load(config);
+            url = properties.getProperty("url");
+            login = properties.getProperty("login");
+            password = properties.getProperty("password");
         } catch (IOException e) {
-            throw new IOException("File " + userDataLocation + ("not found"));
+            throw new IOException("File " + configUrl + ("not found"));
         }
 
-        if (login == null && password == null) {
-            connection = DriverManager.getConnection(url, login, password);
-
+        if (login.equals("null") && password.equals("null")) {
+            Class.forName(SQLiteCollector.getDriverName());
+            collector = manager.getTransformer(SQLiteCollector.getDriverName());
         } else {
-            connection = DriverManager.getConnection(url);
+            Class.forName(PostgresCollector.getDriverName());
+            collector = manager.getTransformer(PostgresCollector.getDriverName());
         }
 
-        connection.getMetaData().getDatabaseProductVersion();
+        connection = DriverManager.getConnection(url, login, password);
+
         String baseProductName = connection.getMetaData().getDatabaseProductName();
-        logger.debug("Data base product: " + baseProductName);
-        List<Table> tables = transformer.getTables(connection);
-        System.out.println(tables);
+        logger.debug("Data base product: " + baseProductName );
+        logger.debug("Data base URL: " + url+ "\n");
+        List<Table> tables = collector.getTables(connection);
+
         for (Table table : tables) {
+            logger.info("---------------------------------------------");
+            logger.info("TABLE NAME: " + table.getName());
             for (Field field : table.getFields()) {
                 logger.info(field);
             }
             logger.info(table.getPrimaryKey());
-                logger.info(table.getPrimaryKey());
-            logger.info(table);
+            logger.info(table.getPrimaryKey());
             for (ForeignKey foreignKey : table.getForeignKeys()) {
                 logger.info(foreignKey);
             }
@@ -76,7 +78,6 @@ public class Run {
                 logger.info(index);
             }
         }
-
     }
 
 }

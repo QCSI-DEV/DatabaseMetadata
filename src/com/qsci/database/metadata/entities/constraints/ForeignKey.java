@@ -20,14 +20,14 @@ public class ForeignKey {
 
     @Override
     public String toString() {
-        return "ForeignKey{" +
-                "fromTable='" + fromTable + '\'' +
-                ", toTable='" + toTable + '\'' +
-                ", fromName='" + fromName + '\'' +
-                ", toName='" + toName + '\'' +
-                ", actionOnUpdate=" + actionOnUpdate +
-                ", actionOnDelete=" + actionOnDelete +
-                '}';
+        return "ForeignKey: (" +
+                "fromTable = " + fromTable +
+                ", toTable = " + toTable +
+                ", fromName = " + fromName +
+                ", toName = " + toName +
+                ", actionOnUpdate = " + actionOnUpdate +
+                ", actionOnDelete = " + actionOnDelete +
+                ')';
     }
 
     @Override

@@ -1,6 +1,7 @@
-package com.qsci.database.metadata.transformers;
+package com.qsci.database.metadata.collectors;
 
 import com.qsci.database.metadata.entities.model.Table;
+import org.apache.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -9,8 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgresTransformer extends Transformer {
-
+public class PostgresCollector extends Collector {
+    public final static Logger logger = Logger.getLogger(PostgresCollector.class);
 
 
     public static String getDriverName() {
@@ -19,21 +20,17 @@ public class PostgresTransformer extends Transformer {
 
     @Override
     public List<Table> getTables(Connection connection) throws SQLException {
-        String schemaPattern = "public";
-        ResultSet sourceTables = connection.getMetaData().getTables(null, schemaPattern, null, null);
-        List<Table> destinationTables = new ArrayList<>();
-        String  schema = connection.getSchema();
+        String  schemaPattern = "public";
         String catalog = connection.getCatalog();
-
+        ResultSet sourceTables = connection.getMetaData().getTables(catalog, schemaPattern, null, null);
+        List<Table> destinationTables = new ArrayList<>();
 
         while (sourceTables.next()) {
-            if (sourceTables.getString("TABLE_NAME").endsWith("seq")) {
-                continue;
-            }
             destinationTables.add(new Table(sourceTables.getString("TABLE_NAME")));
         }
 
         for (Table destinationTable : destinationTables) {
+
             connection.getMetaData().getExportedKeys(catalog, schemaPattern, destinationTable.getName());
             DatabaseMetaData metaData = connection.getMetaData();
             insertForeignKeys(destinationTable,metaData);
